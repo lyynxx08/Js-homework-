@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>All Projects Single File</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#f7f8fb;color:#111;margin:20px}
+.wrapper{max-width:820px;margin:0 auto;background:#fff;padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+h1{font-size:18px;margin:0 0 12px}
+.grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.btn{padding:8px 10px;border:1px solid #ddd;background:#fafafa;border-radius:6px;cursor:pointer}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+input{padding:8px;border:1px solid #ddd;border-radius:6px;min-width:140px}
+.run{background:#0b84ff;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+.out{margin-top:10px;padding:10px;border-radius:6px;background:#f0f6ff;min-height:28px;white-space:pre-wrap}
+.small{font-size:13px;color:#555;margin-top:6px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<h1>All Projects — click a tool, enter values, press Run</h1>
+<div class="grid" id="tools"></div>
+<div class="controls">
+<input id="v1" placeholder="Value 1">
+<input id="v2" placeholder="Value 2">
+<input id="v3" placeholder="Value 3">
+<button class="run" id="run">Run</button>
+</div>
+<div class="small">Use first field for single-value tools. For text inputs (letter/palindrome) type text in Value 1.</div>
+<div class="out" id="out"></div>
+</div>
+
+<script>
+const list=[
+{key:1,name:"Even / Odd",fields:1},
+{key:2,name:"Positive / Negative / Zero",fields:1},
+{key:3,name:"Largest of Three",fields:3},
+{key:4,name:"Leap Year",fields:1},
+{key:5,name:"Vowel / Consonant",fields:1},
+{key:6,name:"Age Eligibility",fields:1},
+{key:7,name:"Factorial",fields:1},
+{key:8,name:"Multiplication Table",fields:1},
+{key:9,name:"Sum of Digits",fields:1},
+{key:10,name:"Reverse Number/Text",fields:1},
+{key:11,name:"Palindrome",fields:1},
+{key:12,name:"Prime",fields:1},
+{key:13,name:"ATM Withdrawal",fields:1},
+{key:14,name:"Discount",fields:2},
+{key:15,name:"Temperature C → F",fields:1},
+{key:16,name:"Currency INR → USD",fields:1},
+{key:17,name:"Traffic Signal (random)",fields:0},
+{key:18,name:"BMI (kg, m)",fields:2}
+]
+const toolsDiv=document.getElementById("tools"),v1=document.getElementById("v1"),v2=document.getElementById("v2"),v3=document.getElementById("v3"),out=document.getElementById("out"),runBtn=document.getElementById("run")
+let current=1
+list.forEach(t=>{
+let b=document.createElement("button")
+b.className="btn"
+b.textContent=t.name
+b.dataset.k=t.key
+b.addEventListener("click",()=>{
+current=t.key
+setPlaceholders(t.fields)
+highlight(b)
+out.textContent=""
+})
+toolsDiv.appendChild(b)
+})
+function highlight(btn){
+Array.from(toolsDiv.children).forEach(x=>x.style.boxShadow="")
+btn.style.boxShadow="0 4px 12px rgba(11,132,255,.2)"
+}
+function setPlaceholders(n){
+v1.value="";v2.value="";v3.value=""
+v1.classList.remove("hidden");v2.classList.remove("hidden");v3.classList.remove("hidden")
+if(n==0){v1.classList.add("hidden");v2.classList.add("hidden");v3.classList.add("hidden");return}
+if(n==1){v1.placeholder="Value 1";v2.classList.add("hidden");v3.classList.add("hidden");return}
+if(n==2){v1.placeholder="Value 1";v2.placeholder="Value 2";v3.classList.add("hidden");v2.classList.remove("hidden");v1.classList.remove("hidden");return}
+v1.placeholder="Value 1";v2.placeholder="Value 2";v3.placeholder="Value 3";v1.classList.remove("hidden");v2.classList.remove("hidden");v3.classList.remove("hidden")
+}
+setPlaceholders(1)
+highlight(toolsDiv.firstChild)
+
+function toNum(s){if(s===undefined||s==="")return NaN;let n=parseFloat(s);return isNaN(n)?NaN:n}
+function sumDigitsStr(s){let sum=0;for(let ch of s.toString()){if(/\d/.test(ch))sum+=+ch}return sum}
+runBtn.addEventListener("click",()=>{
+out.textContent=""
+let aRaw=v1.value.trim(),bRaw=v2.value.trim(),cRaw=v3.value.trim()
+let a=toNum(aRaw),b=toNum(bRaw),c=toNum(cRaw)
+let r=""
+if(current==1) r=isNaN(a)?"Enter number":(a%2==0?"Even":"Odd")
+else if(current==2) r=isNaN(a)?"Enter number":(a>0?"Positive":a<0?"Negative":"Zero")
+else if(current==3) r=(isNaN(a)||isNaN(b)||isNaN(c))?"Enter three numbers":Math.max(a,b,c)
+else if(current==4) r=isNaN(a)?"Enter year":(((a%4==0&&a%100!=0)||a%400==0)?"Leap Year":"Not Leap Year")
+else if(current==5) r=aRaw==""?"Enter letter":("aeiou".includes(aRaw.toLowerCase())?"Vowel":"Consonant")
+else if(current==6) r=isNaN(a)?"Enter age":(a>=60?"Senior Citizen":a>=18?"Eligible to Vote & Drive":"Not eligible")
+else if(current==7){if(isNaN(a))r="Enter number";else if(a<0)r="No factorial for negative";else{let f=1;for(let i=1;i<=Math.floor(a);i++)f*=i;r=f}}
+else if(current==8) r=isNaN(a)?"Enter number":(function(n){let s="";for(let i=1;i<=10;i++)s+=n+" x "+i+" = "+(n*i)+"\n";return s})(a)
+else if(current==9) r=aRaw==""?"Enter digits":sumDigitsStr(aRaw)
+else if(current==10) r=aRaw==""?"Enter value":[...aRaw].reverse().join("")
+else if(current==11) r=aRaw==""?"Enter value":(aRaw==[...aRaw].reverse().join("")?"Palindrome":"Not Palindrome")
+else if(current==12) r=isNaN(a)?"Enter number":(function(n){if(n<=1)return "Not Prime";for(let i=2;i*i<=n;i++)if(n%i==0)return "Not Prime";return "Prime"})(Math.floor(a))
+else if(current==13) r=isNaN(a)?"Enter withdraw amount":(function(w){let bal=10000;return w<=bal?("Remaining: "+(bal-w)):"Insufficient balance"})(a)
+else if(current==14) r=(isNaN(a)||isNaN(b))?"Enter price and discount":"Final price: "+(a-a*(b/100))
+else if(current==15) r=isNaN(a)?"Enter Celsius":"Fahrenheit: "+(a*9/5+32)
+else if(current==16) r=isNaN(a)?"Enter INR":"USD: "+(a/83).toFixed(2)
+else if(current==17) r=["Red - Stop","Yellow - Wait","Green - Go"][Math.floor(Math.random()*3)]
+else if(current==18) r=(isNaN(a)||isNaN(b))?"Enter weight and height":"BMI: "+(a/(b*b)).toFixed(2)
+out.textContent=r
+})
+</script>
+</body>
+</html>
