@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dynamic JS String Methods</title>
+<style>
+body { font-family: Arial; background:#0f172a; color:white; padding:20px }
+.box { max-width:900px; margin:auto; background:#111827; padding:20px; border-radius:12px }
+input, select { padding:10px; width:100%; margin:8px 0; border-radius:8px; border:none; font-size:15px }
+.result { background:#020617; padding:12px; border-radius:8px; margin-top:10px; white-space:pre-wrap }
+label { font-size:14px; opacity:0.8 }
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Dynamic JS String Method Tester</h2>
+
+<label>Enter String</label>
+<input id="textInput" value="Hello World">
+
+<label>Select Method</label>
+<select id="methodSelect"></select>
+
+<label>Extra Parameter (optional)</label>
+<input id="paramInput" placeholder="example: 0,5 or 'o'">
+
+<div class="result" id="output"></div>
+</div>
+
+<script>
+const methods = {
+  length: s => s.length,
+  charAt: (s,p) => s.charAt(p || 0),
+  slice: (s,p) => { let [a,b]=p.split(','); return s.slice(a,b) },
+  substring: (s,p) => { let [a,b]=p.split(','); return s.substring(a,b) },
+  indexOf: (s,p) => s.indexOf(p),
+  lastIndexOf: (s,p) => s.lastIndexOf(p),
+  includes: (s,p) => s.includes(p),
+  startsWith: (s,p) => s.startsWith(p),
+  endsWith: (s,p) => s.endsWith(p),
+  toUpperCase: s => s.toUpperCase(),
+  toLowerCase: s => s.toLowerCase(),
+  trim: s => s.trim(),
+  replace: (s,p) => { let [a,b]=p.split(','); return s.replace(a,b) },
+  replaceAll: (s,p) => { let [a,b]=p.split(','); return s.replaceAll(a,b) },
+  repeat: (s,p) => s.repeat(p || 2),
+  split: (s,p) => s.split(p || " "),
+  padStart: (s,p) => { let [a,b]=p.split(','); return s.padStart(a,b||"0") },
+  padEnd: (s,p) => { let [a,b]=p.split(','); return s.padEnd(a,b||"0") }
+};
+
+const select = document.getElementById("methodSelect");
+Object.keys(methods).forEach(m => {
+  let opt = document.createElement("option");
+  opt.value = m;
+  opt.textContent = m;
+  select.appendChild(opt);
+});
+
+function run() {
+  let text = document.getElementById("textInput").value;
+  let method = select.value;
+  let param = document.getElementById("paramInput").value;
+
+  try {
+    let result = methods[method](text, param);
+    document.getElementById("output").textContent = 
+      "Input: " + text + "\nMethod: " + method + "\nResult: " + JSON.stringify(result);
+  } catch {
+    document.getElementById("output").textContent = "Error — invalid parameters";
+  }
+}
+
+document.querySelectorAll("input, select").forEach(e => e.addEventListener("input", run));
+run();
+</script>
+
+</body>
+</html>
